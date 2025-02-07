@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import String, Text, DateTime, Boolean
+from sqlalchemy import String, Text, DateTime, Boolean, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.database import BaseTalentCity
@@ -11,6 +11,7 @@ class ArticlesOrm(BaseTalentCity):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(250))
+    article_theme_id: Mapped[int] = mapped_column(ForeignKey("article_themes.id"))
     article_body: Mapped[str] = mapped_column(Text)
     title_img: Mapped[str] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)

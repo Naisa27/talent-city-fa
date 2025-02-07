@@ -1,0 +1,19 @@
+from datetime import datetime
+
+from sqlalchemy import String, Text, DateTime, Boolean
+from sqlalchemy.orm import Mapped, mapped_column
+
+from src.database import BaseTalentCity
+
+
+class ArticleThemesOrm(BaseTalentCity):
+    __tablename__ = "article_themes"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    theme: Mapped[str] = mapped_column(String(250))
+    description: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
+    isActive: Mapped[bool] = mapped_column(Boolean, default=True)
+    active_at: Mapped[datetime | None] = mapped_column(DateTime)
+    disactive_at: Mapped[datetime | None] = mapped_column(DateTime)
+    update_at: Mapped[datetime | None] = mapped_column(DateTime)

@@ -10,6 +10,7 @@ from alembic import context
 from src.config import settings
 from src.database import BaseTalentCity
 from src.models.articles import ArticlesOrm
+from src.models.article_themes import ArticleThemesOrm
 
 USE_TWOPHASE = False
 
