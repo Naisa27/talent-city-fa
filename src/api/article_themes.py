@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Body, Query
-from sqlalchemy import insert, select
+from sqlalchemy import insert, select, func
 
 from src.api.dependencies import PaginationDep
 from src.database import async_session_maker_talent_city, engine_talent_city
@@ -39,17 +39,13 @@ async def create_article_theme( article_theme_data: ArticleThemes = Body(
 @router.get('/', summary="Получение списка тем статей")
 async def get_article_themes(
     pagination: PaginationDep,
-    id: int | None = Query(None, description="ID темы"),
     theme: str | None = Query(None, description="Тема статьи"),
 ):
     async with async_session_maker_talent_city() as session:
         query = select(ArticleThemesOrm)
 
-        if id:
-            query = query.filter_by(id=id)
-
         if theme:
-            query = query.filter_by(theme=theme)
+            query = query.filter(func.lower(ArticleThemesOrm.theme).contains({theme.strip().lower()}))
 
         query = (
             query
