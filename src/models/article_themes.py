@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import String, Text, DateTime, Boolean
+from sqlalchemy import String, Text, DateTime, Boolean, text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.database import BaseTalentCity
@@ -16,4 +16,4 @@ class ArticleThemesOrm(BaseTalentCity):
     isActive: Mapped[bool] = mapped_column(Boolean, default=True)
     active_at: Mapped[datetime | None] = mapped_column(DateTime)
     disactive_at: Mapped[datetime | None] = mapped_column(DateTime)
-    update_at: Mapped[datetime | None] = mapped_column(DateTime)
+    update_at: Mapped[datetime | None] = mapped_column(DateTime, onupdate=datetime.now)
