@@ -9,10 +9,7 @@ from alembic import context
 
 from src.config import settings
 from src.database import BaseTalentCity
-from src.models.articles import ArticlesOrm
-from src.models.article_themes import ArticleThemesOrm
-from src.models.users import UsersOrm
-from src.models.roles import RolesOrm
+from src.models import *
 
 USE_TWOPHASE = False
 

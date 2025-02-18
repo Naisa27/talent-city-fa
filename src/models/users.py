@@ -1,9 +1,13 @@
+import typing
 from datetime import datetime
 
 from sqlalchemy import String, DateTime, text, Boolean
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.database import BaseTalentCity
+
+if typing.TYPE_CHECKING:
+    from src.models import RolesOrm
 
 
 class UsersOrm(BaseTalentCity):
@@ -23,3 +27,8 @@ class UsersOrm(BaseTalentCity):
     active_at: Mapped[datetime | None] = mapped_column(DateTime)
     disactive_at: Mapped[datetime | None] = mapped_column(DateTime)
     updated_at: Mapped[datetime | None] = mapped_column(DateTime, server_onupdate=text("NOW()"))
+
+    roles: Mapped[list["RolesOrm"]] = relationship(
+        back_populates="RolesOrm",
+        secondary="users_roles",
+    )
