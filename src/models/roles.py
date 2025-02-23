@@ -23,7 +23,7 @@ class RolesOrm(BaseTalentCity):
     disactive_at: Mapped[datetime | None] = mapped_column(DateTime)
     updated_at: Mapped[datetime | None] = mapped_column(DateTime, server_onupdate=text("NOW()"))
 
-    users: Mapped[list["UsersOrm"]] = relationship(
-        back_populates="UsersOrm",
-        secondary="users_roles",
-    )
+    # users: Mapped[list["UsersOrm"]] = relationship(
+    #     back_populates="RolesOrm",
+    #     secondary="users_roles",
+    # )

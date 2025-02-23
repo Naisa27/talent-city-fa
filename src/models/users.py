@@ -17,7 +17,7 @@ class UsersOrm(BaseTalentCity):
     first_name: Mapped[str] = mapped_column(String(250))
     patronimic: Mapped[str | None] = mapped_column(String(250))
     city: Mapped[str | None] = mapped_column(String(250))
-    email: Mapped[str] = mapped_column(String(250))
+    email: Mapped[str] = mapped_column(String(250), unique=True)
     phone: Mapped[str] = mapped_column(String(15))
     hashed_password: Mapped[str] = mapped_column(String(250))
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=text("NOW()"))
@@ -28,7 +28,7 @@ class UsersOrm(BaseTalentCity):
     disactive_at: Mapped[datetime | None] = mapped_column(DateTime)
     updated_at: Mapped[datetime | None] = mapped_column(DateTime, server_onupdate=text("NOW()"))
 
-    roles: Mapped[list["RolesOrm"]] = relationship(
-        back_populates="RolesOrm",
-        secondary="users_roles",
-    )
+    # roles: Mapped[list["RolesOrm"]] = relationship(
+    #     back_populates="UsersOrm",
+    #     secondary="users_roles",
+    # )

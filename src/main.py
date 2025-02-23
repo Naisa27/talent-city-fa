@@ -19,7 +19,8 @@ from src.api.index import router as index_router
 from src.api.articles import router as articles_router
 from src.api.users import router as users_router
 from src.api.admin import router as admin_router
-from src.api.article_themes import router as article_themes
+from src.api.article_themes import router as article_themes_router
+from src.api.roles import router as roles_router
 
 app = FastAPI(
     title = "API - сайт Город талантов",
@@ -31,7 +32,8 @@ app.include_router(index_router)
 app.include_router(articles_router)
 app.include_router(users_router)
 app.include_router(admin_router)
-app.include_router(article_themes)
+app.include_router(article_themes_router)
+app.include_router(roles_router)
 
 
 @app.get("/docs", include_in_schema=False)
