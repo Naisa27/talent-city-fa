@@ -42,3 +42,11 @@ class User(BaseModel):
     update_at: datetime | None = None
 
     model_config = ConfigDict( from_attributes=True )
+
+
+class UserWithHashedPassword(User):
+    hashed_password: str
+
+class UserRequestLogin(BaseModel):
+    email: EmailStr
+    password: str
