@@ -18,7 +18,7 @@ class ArticleThemesRepository(BaseRepository):
         query = select(ArticleThemesOrm)
 
         if theme:
-            query = query.filter(func.lower(ArticleThemesOrm.theme).contains({theme.strip().lower()}))
+            query = query.filter(func.lower(ArticleThemesOrm.theme).contains(theme.strip().lower()))
 
         query = (
             query
