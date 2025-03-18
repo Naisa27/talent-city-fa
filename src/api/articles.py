@@ -1,9 +1,11 @@
+from datetime import datetime
+
 from fastapi import APIRouter, Body, Query
 
 from src.api.dependencies import UserIdDep, PaginationDep
 from src.database import async_session_maker_talent_city
 from src.repositories.articles import ArticlesRepository
-from src.schemas.articles import ArticleAdd, ArticleRequestAdd
+from src.schemas.articles import ArticleAdd, ArticleRequestAdd, ArticleRequestPatch, ArticlePatch, ArticleDel, ArticleRestore
 
 router = APIRouter(prefix="/articles", tags=["Статьи"])
 
@@ -44,7 +46,7 @@ async def create_article(
     return {"status": "OK", "data": article}
 
 
-@router.get("", summary="Получение списка статей")
+@router.get("", summary="Получение списка статей с фильтрами для всех пользователей")
 async def get_articles(
     pagination: PaginationDep,
     title: str | None = Query(None, description="Заголовок статьи"),
@@ -61,3 +63,100 @@ async def get_articles(
             limit=pagination.per_page,
             offset=(pagination.page - 1) * pagination.per_page
         )
+
+
+@router.get("/me", summary="Получение списка только моих статей с фильтрами")
+async def get_my_articles(
+    user_id: UserIdDep,
+    pagination: PaginationDep,
+    title: str | None = Query(None, description="Заголовок статьи"),
+    article_theme_id: int | None = Query(None, description="ID темы статьи"),
+    article_body: str | None = Query(None, description="Содержание статьи"),
+):
+    async with async_session_maker_talent_city() as session:
+        return await ArticlesRepository(session).get_all(
+            title=title,
+            article_theme_id=article_theme_id,
+            article_body=article_body,
+            author=user_id,
+            limit=pagination.per_page,
+            offset=(pagination.page - 1) * pagination.per_page
+        )
+
+
+@router.get("/me/deleted", summary="Получение списка моих удалённых статей")
+async def get_my_deleted_articles(
+    user_id: UserIdDep,
+    pagination: PaginationDep,
+):
+    async with async_session_maker_talent_city() as session:
+        return await ArticlesRepository(session).get_deleted(
+            author=user_id,
+            limit=pagination.per_page,
+            offset=(pagination.page - 1) * pagination.per_page
+        )
+
+
+@router.post("/me/restore/{article_id}", summary="Восстановление удалённой статьи")
+async def restore_my_deleted_article(
+    article_id: int,
+    user_id: UserIdDep,
+):
+    article_data = ArticleRestore(
+        mark_for_del=False,
+        deleted_at=None,
+        updated_at=datetime.now()
+    )
+    async with async_session_maker_talent_city() as session:
+        await ArticlesRepository( session ).update( article_data, id=article_id )
+        await session.commit()
+
+    return {"status": "OK" }
+
+
+@router.get("/{article_id}", summary="Получение конкретной статьи")
+async def get_article(article_id: int):
+    async with async_session_maker_talent_city() as session:
+        return await ArticlesRepository(session).get_one_or_none(id=article_id)
+
+
+@router.patch("/{article_id}", summary="Редактирование статьи")
+async def update_article(
+    article_id: int,
+    article_data: ArticleRequestPatch,
+):
+    data_dt = {
+        "updated_at": datetime.now(),
+    }
+    if article_data.isPublish == True:
+        data_dt["publish_at"] = datetime.now()
+    elif article_data.isPublish == False:
+        data_dt["unpublish_at"] = datetime.now()
+
+    _article_data_dict = article_data.model_dump( exclude_unset=True )
+    _article_data = ArticlePatch(**_article_data_dict, **data_dt)
+    async with async_session_maker_talent_city() as session:
+        await ArticlesRepository(session).update(_article_data, exclude_unset=True, id=article_id)
+        await session.commit()
+
+    return {"status": "OK" }
+
+
+@router.delete(
+    "/{article_id}",
+    summary="Удаление статьи",
+    description="<h2>Удаление статьи помечает её как удалённую, но не удаляет из БД</h2>",
+)
+async def delete_article(article_id: int):
+    article_data = ArticleDel(
+        mark_for_del=True,
+        deleted_at=datetime.now(),
+        isPublish=False,
+        unpublish_at=datetime.now(),
+        updated_at=datetime.now()
+    )
+    async with async_session_maker_talent_city() as session:
+        await ArticlesRepository(session).update(article_data, id=article_id)
+        await session.commit()
+
+    return {"status": "OK" }

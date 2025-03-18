@@ -32,8 +32,8 @@ app.include_router(index_router)
 app.include_router(users_router)
 app.include_router(admin_router)
 app.include_router(article_themes_router)
-app.include_router(roles_router)
 app.include_router(articles_router)
+app.include_router(roles_router)
 
 
 @app.get("/docs", include_in_schema=False)

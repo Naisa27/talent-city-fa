@@ -15,9 +15,6 @@ class BaseRepository:
         return [self.schema.model_validate(row) for row in result.scalars().all()]
 
     async def get_all( self, *args, **kwargs ):
-        # query = select( self.model )
-        # result = await self.session.execute( query )
-        # return [self.schema.model_validate(row) for row in result.scalars().all()]
         return await self.get_filtered()
 
     async def get_one_or_none( self, **filter_by ):
@@ -43,6 +40,7 @@ class BaseRepository:
             .filter_by( **filter_by )
             .values( **data.model_dump( exclude_unset=exclude_unset ) )
         )
+        # print(update_stmt.compile(compile_kwargs={"literal_binds": True}))
         await self.session.execute( update_stmt )
 
     async def delete( self, **filter_by ) -> None:

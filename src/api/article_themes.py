@@ -70,6 +70,7 @@ async def update_article_theme(
     theme_id: int,
     article_theme_data: ArticleThemesPatch,
 ):
+    print(f"{article_theme_data}")
     async with async_session_maker_talent_city() as session:
         await ArticleThemesRepository( session ).update( article_theme_data, exclude_unset = True, id=theme_id )
         await session.commit()

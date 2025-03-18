@@ -28,3 +28,31 @@ class Article(ArticleAdd):
     updated_at: datetime | None = None
     mark_for_del: bool = False
     deleted_at: datetime | None = None
+
+
+class ArticleRequestPatch(BaseModel):
+    title: str | None = None
+    article_theme_id: int | None = None
+    article_body: str | None = None
+    title_img: str | None = None
+    isPublish: bool | None = None
+
+
+class ArticlePatch(ArticleRequestPatch):
+    publish_at: datetime | None = None
+    unpublish_at: datetime | None = None
+    updated_at: datetime
+
+
+class ArticleDel(BaseModel):
+    mark_for_del: bool
+    deleted_at: datetime
+    isPublish: bool
+    unpublish_at: datetime
+    updated_at: datetime
+
+
+class ArticleRestore(BaseModel):
+    mark_for_del: bool
+    deleted_at: datetime | None = None
+    updated_at: datetime

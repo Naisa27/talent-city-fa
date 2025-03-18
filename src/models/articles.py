@@ -19,6 +19,6 @@ class ArticlesOrm(BaseTalentCity):
     isPublish: Mapped[bool] = mapped_column(Boolean, server_default=text("FALSE"))
     publish_at: Mapped[datetime | None] = mapped_column(DateTime)
     unpublish_at: Mapped[datetime | None] = mapped_column(DateTime)
-    updated_at: Mapped[datetime | None] = mapped_column(DateTime, server_onupdate=text("NOW()"))
+    updated_at: Mapped[datetime | None] = mapped_column(DateTime, onupdate=datetime.now())
     mark_for_del: Mapped[bool] = mapped_column(Boolean, server_default=text("FALSE"))
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime)
