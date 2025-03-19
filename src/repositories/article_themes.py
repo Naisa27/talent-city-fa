@@ -15,7 +15,7 @@ class ArticleThemesRepository(BaseRepository):
             limit,
             offset,
         ) -> list[ArticleThemes]:
-        query = select(ArticleThemesOrm)
+        query = select(ArticleThemesOrm).filter(self.model.mark_for_del == False, self.model.isActive == True)
 
         if theme:
             query = query.filter(func.lower(ArticleThemesOrm.theme).contains(theme.strip().lower()))

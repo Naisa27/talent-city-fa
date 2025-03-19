@@ -38,7 +38,7 @@ async def create_article_theme( article_theme_data: ArticleThemesAdd = Body(
 @router.get("/{theme_id}", summary="Получение конкретной темы статьи")
 async def get_article_theme(theme_id: int):
     async with async_session_maker_talent_city() as session:
-        return await ArticleThemesRepository(session).get_one_or_none(id=theme_id)
+        return await ArticleThemesRepository(session).get_one_or_none(id=theme_id, mark_for_del = False)
 
 
 @router.get("", summary="Получение списка тем статей")
