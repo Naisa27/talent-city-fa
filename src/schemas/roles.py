@@ -16,7 +16,8 @@ class Roles(RolesAdd):
     created_at: datetime
     isActive: bool
     active_at: datetime | None = None
-    disactive_at: datetime | None = None
+    mark_for_del: bool
+    deleted_at: datetime | None = None
     update_at: datetime | None = None
 
     model_config = ConfigDict(from_attributes=True)
