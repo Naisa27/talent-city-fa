@@ -12,7 +12,7 @@ class ArticleThemes(ArticleThemesAdd):
     id: int
     created_at: datetime
     isActive: bool
-    active_at: datetime | None = None
+    disactive_at: datetime | None = None
     mark_for_del: bool
     deleted_at: datetime | None = None
     update_at: datetime | None = None

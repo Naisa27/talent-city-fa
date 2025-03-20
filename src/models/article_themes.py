@@ -14,7 +14,7 @@ class ArticleThemesOrm(BaseTalentCity):
     description: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=text("NOW()"))
     isActive: Mapped[bool] = mapped_column(Boolean, server_default=text("TRUE"))
-    active_at: Mapped[datetime | None] = mapped_column(DateTime)
+    disactive_at: Mapped[datetime | None] = mapped_column(DateTime)
     mark_for_del: Mapped[bool] = mapped_column(Boolean, server_default=text("FALSE"))
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime)
     update_at: Mapped[datetime | None] = mapped_column(DateTime, server_onupdate=text("NOW()"))
