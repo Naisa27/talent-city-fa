@@ -24,7 +24,7 @@ class UsersOrm(BaseTalentCity):
     isBlocked: Mapped[bool] = mapped_column(Boolean, server_default=text("FALSE"))
     blocked_at: Mapped[datetime | None] = mapped_column(DateTime)
     isActive: Mapped[bool] = mapped_column(Boolean, server_default=text("TRUE"))
-    active_at: Mapped[datetime | None] = mapped_column(DateTime)
+    disactive_at: Mapped[datetime | None] = mapped_column(DateTime)
     mark_for_del: Mapped[bool] = mapped_column(Boolean, server_default=text("FALSE"))
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime)
     updated_at: Mapped[datetime | None] = mapped_column(DateTime, server_onupdate=text("NOW()"))
