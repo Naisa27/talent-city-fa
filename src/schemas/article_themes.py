@@ -24,4 +24,11 @@ class ArticleThemesPatch(BaseModel):
     theme: str | None = None
     description: str | None = None
 
+
+class ArticleThemesDel(BaseModel):
+    mark_for_del: bool
+    deleted_at: datetime
+    isActive: bool
+    disactive_at: datetime
+    updated_at: datetime
     

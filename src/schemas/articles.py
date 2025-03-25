@@ -29,6 +29,8 @@ class Article(ArticleAdd):
     mark_for_del: bool = False
     deleted_at: datetime | None = None
 
+    model_config = ConfigDict( from_attributes=True )
+
 
 class ArticleRequestPatch(BaseModel):
     title: str | None = None

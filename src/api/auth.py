@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Body, HTTPException, Response
 
-from src.api.dependencies import UserIdDep
+from src.api.dependencies import UserIdDep, DBDep
 from src.database import async_session_maker_talent_city
 from src.repositories.users import UsersRepository
 from src.schemas.users import UserRequestAdd, UserAdd, UserRequestLogin
@@ -11,6 +11,7 @@ router = APIRouter(prefix='/auth', tags=['Аутентификация и авт
 
 @router.post('/register', summary="Регистрация пользователя")
 async def register(
+    db: DBDep,
     data: UserRequestAdd = Body(
         openapi_examples={
             "1": {
@@ -50,9 +51,8 @@ async def register(
         phone=data.phone,
         hashed_password=hashed_password
     )
-    async with async_session_maker_talent_city() as session:
-        await UsersRepository(session).add(new_user_data)
-        await session.commit()
+    await db.Users.add(new_user_data)
+    await db.commit()
 
     return {"status": "OK"}
 
@@ -60,6 +60,7 @@ async def register(
 @router.post('/login', summary="Залогинивание пользователя")
 async def login(
     response: Response,
+    db: DBDep,
     data: UserRequestLogin = Body(
         openapi_examples={
             "1": {
@@ -79,28 +80,27 @@ async def login(
         },
     ),
 ):
-    async with async_session_maker_talent_city() as session:
-        user = await UsersRepository(session).get_user_with_hashed_password(email=data.email)
+    user = await db.Users.get_user_with_hashed_password(email=data.email)
 
-        if not user:
-            raise HTTPException(status_code=401, detail="Пользователь не зарегистрирован")
+    if not user:
+        raise HTTPException(status_code=401, detail="Пользователь не зарегистрирован")
 
-        if not AuthService().verify_password(data.password, user.hashed_password):
-            raise HTTPException(status_code=401, detail="Неверный пароль")
+    if not AuthService().verify_password(data.password, user.hashed_password):
+        raise HTTPException(status_code=401, detail="Неверный пароль")
 
-        access_token = AuthService().create_access_token({"user_id": user.id, "roles": []})
-        response.set_cookie("access_token", access_token)
+    access_token = AuthService().create_access_token({"user_id": user.id, "roles": []})
+    response.set_cookie("access_token", access_token)
 
-        return {"access_token": access_token}
+    return {"access_token": access_token}
 
 
 @router.get('/me', summary="Получить данные залогиненного пользователя")
 async def get_me(
     user_id: UserIdDep,
+    db: DBDep
 ):
-    async with async_session_maker_talent_city() as session:
-        user = await UsersRepository(session).get_one_or_none(id=user_id)
-        return user
+    user = await db.Users.get_one_or_none(id=user_id)
+    return user
 
 
 @router.post('/logout', summary="Выход. Разлогинивание пользователя")
