@@ -1,6 +1,5 @@
 from sqlalchemy import select, func
 
-from src.database import engine_talent_city
 from src.models.articles import ArticlesOrm
 from src.repositories.base import BaseRepository
 from src.schemas.articles import Article

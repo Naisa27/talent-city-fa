@@ -3,8 +3,6 @@ from datetime import datetime
 from fastapi import APIRouter, Body, Query
 
 from src.api.dependencies import UserIdDep, PaginationDep, DBDep
-from src.database import async_session_maker_talent_city
-from src.repositories.articles import ArticlesRepository
 from src.schemas.articles import ArticleAdd, ArticleRequestAdd, ArticleRequestPatch, ArticlePatch, ArticleDel, ArticleRestore
 
 router = APIRouter(prefix="/articles", tags=["Статьи"])

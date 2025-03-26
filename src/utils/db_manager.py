@@ -1,7 +1,9 @@
 from src.repositories.article_themes import ArticleThemesRepository
 from src.repositories.articles import ArticlesRepository
+from src.repositories.favourites import FavouritesRepository
 from src.repositories.roles import RolesRepository
 from src.repositories.users import UsersRepository
+
 
 
 class DBManager:
@@ -15,6 +17,7 @@ class DBManager:
         self.Articles = ArticlesRepository(self.session)
         self.Roles = RolesRepository(self.session)
         self.Users = UsersRepository(self.session)
+        self.Favourites = FavouritesRepository(self.session)
 
         return self
 

@@ -1,5 +1,11 @@
+import logging
+
+from asyncpg import UniqueViolationError
 from pydantic import BaseModel
 from sqlalchemy import select, insert, update, delete
+from sqlalchemy.exc import IntegrityError
+
+from src.exceptions.base import AllreadyExistsException
 
 
 class BaseRepository:
@@ -19,19 +25,28 @@ class BaseRepository:
 
     async def get_one_or_none( self, **filter_by ):
         query = select( self.model ).filter_by(**filter_by)
+
         result = await self.session.execute( query )
         row = result.scalars().one_or_none()
 
         if not row:
             return None
 
+
         return self.schema.model_validate(row)
 
     async def add( self, data: BaseModel ):
         add_data_stmt = insert( self.model ).values( **data.model_dump() ).returning( self.model )
         # print(add_theme_stmt.compile(engine_talent_city, compile_kwargs={"literal_binds": True}))
-        result = await self.session.execute( add_data_stmt )
-        row = result.scalars().one()
+        try:
+            result = await self.session.execute( add_data_stmt )
+            row = result.scalars().one()
+        except IntegrityError as e:
+            if isinstance( e.orig.__cause__, UniqueViolationError ):
+                raise AllreadyExistsException from e
+            else:
+                raise e
+
         return self.schema.model_validate( row )
 
     async def update( self, data: BaseModel, exclude_unset: bool = False, **filter_by ) -> None:
