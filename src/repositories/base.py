@@ -35,6 +35,14 @@ class BaseRepository:
 
         return self.schema.model_validate(row)
 
+    async def get_not_none_filtered( self, column: str, **filter_by ):
+        query = select(self.model).filter(self.model[column].is_not(None)).filter_by(**filter_by)
+        result = await self.session.execute( query )
+        return [self.schema.model_validate( row ) for row in result.scalars().all()]
+
+    async def get_all_not_none( self ):
+        return await self.get_not_none_filtered()
+
     async def add( self, data: BaseModel ):
         add_data_stmt = insert( self.model ).values( **data.model_dump() ).returning( self.model )
         # print(add_theme_stmt.compile(engine_talent_city, compile_kwargs={"literal_binds": True}))

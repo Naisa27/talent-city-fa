@@ -23,3 +23,20 @@ async def add_article(
         raise FavouriteArticleAllreadyExistsHTTPException
 
     return {"status": "OK", "article": article}
+
+
+@router.get("/articles", summary="Получить список избранных статей")
+async def get_articles(
+    db: DBDep,
+):
+    articles = await db.Favourites.get_not_none()
+    return articles
+
+
+@router.get("/articles/me", summary="Получить список своих избранных статей")
+async def get_my_articles(
+    db: DBDep,
+    user_id: UserIdDep
+):
+    articles = await db.Favourites.get_not_none(user_id = user_id)
+    return articles
