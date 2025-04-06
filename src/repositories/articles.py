@@ -14,7 +14,7 @@ class ArticlesRepository(BaseRepository):
             title,
             article_theme_id,
             article_body,
-            author,
+            author_id,
             limit,
             offset,
         ) -> list[Article]:
@@ -29,8 +29,8 @@ class ArticlesRepository(BaseRepository):
         if article_theme_id:
             query = query.filter(self.model.article_theme_id == article_theme_id)
 
-        if author:
-            query = query.filter(self.model.user_id == author)
+        if author_id:
+            query = query.filter(self.model.user_id == author_id)
 
         query = (
             query
@@ -45,7 +45,7 @@ class ArticlesRepository(BaseRepository):
 
     async def get_deleted(
         self,
-        author,
+        author_id,
         limit,
         offset
     ) -> list[Article]:
@@ -53,7 +53,7 @@ class ArticlesRepository(BaseRepository):
             select( self.model )
             .filter(
                 self.model.mark_for_del == True,
-                self.model.user_id == author
+                self.model.user_id == author_id
             )
             .limit( limit )
             .offset( offset )

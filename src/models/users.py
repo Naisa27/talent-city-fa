@@ -27,7 +27,7 @@ class UsersOrm(BaseTalentCity):
     disactive_at: Mapped[datetime | None] = mapped_column(DateTime)
     mark_for_del: Mapped[bool] = mapped_column(Boolean, server_default=text("FALSE"))
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime)
-    updated_at: Mapped[datetime | None] = mapped_column(DateTime, server_onupdate=text("NOW()"))
+    updated_at: Mapped[datetime | None] = mapped_column(DateTime, onupdate=datetime.now())
 
     # roles: Mapped[list["RolesOrm"]] = relationship(
     #     back_populates="UsersOrm",

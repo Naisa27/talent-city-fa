@@ -57,6 +57,10 @@ class BaseRepository:
 
         return self.schema.model_validate( row )
 
+    async def add_bulk( self, data: list[BaseModel] ):
+        add_data_stmt = insert( self.model ).values( [item.model_dump() for item in data] )
+        await self.session.execute( add_data_stmt )
+
     async def update( self, data: BaseModel, exclude_unset: bool = False, **filter_by ) -> None:
         update_stmt = (
             update( self.model )

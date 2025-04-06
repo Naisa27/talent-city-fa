@@ -16,8 +16,8 @@ async def add_article(
 ):
     data = FavouriteArticle(user_id=user_id, article_id=article_id)
     try:
-        await db.Favourites.add(data)
-        article = await db.Articles.get_one_or_none(id=article_id)
+        await db.favourites.add(data)
+        article = await db.articles.get_one_or_none(id=article_id)
         await db.commit()
     except AllreadyExistsException as e:
         raise FavouriteArticleAllreadyExistsHTTPException
@@ -29,7 +29,7 @@ async def add_article(
 async def get_articles(
     db: DBDep,
 ):
-    articles = await db.Favourites.get_not_none()
+    articles = await db.favourites.get_not_none()
     return articles
 
 
@@ -38,5 +38,5 @@ async def get_my_articles(
     db: DBDep,
     user_id: UserIdDep
 ):
-    articles = await db.Favourites.get_not_none(user_id = user_id)
+    articles = await db.favourites.get_not_none(user_id = user_id)
     return articles

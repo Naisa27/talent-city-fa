@@ -2,18 +2,19 @@ from datetime import datetime
 
 from fastapi import APIRouter, Body, Query
 
-from src.api.dependencies import PaginationDep, DBDep
+from src.api.dependencies import PaginationDep, DBDep, UserIdDep
 from src.database import async_session_maker_talent_city
 from src.repositories.article_themes import ArticleThemesRepository
-from src.schemas.article_themes import ArticleThemesPatch, ArticleThemesAdd, ArticleThemesDel
+from src.schemas.article_themes import ArticleThemePatch, ArticleThemeAdd, ArticleThemeDel
 
-router = APIRouter(prefix="/article_themes", tags=["Темы статей"])
+router = APIRouter(prefix="/article_themes", tags=["Справочник тем статей"])
 
 
 @router.post("", summary="Добавление темы статьи")
 async def create_article_theme(
     db: DBDep,
-    article_theme_data: ArticleThemesAdd = Body(
+    user_id: UserIdDep,
+    article_theme_data: ArticleThemeAdd = Body(
     openapi_examples = {
         "1": {
             "summary": "Первая",
@@ -31,8 +32,7 @@ async def create_article_theme(
         },
     }),
 ):
-    theme = await db.ArticleThemes.add(article_theme_data)
-
+    theme = await db.articleThemes.add(article_theme_data)
     await db.commit()
 
     return {"status": "OK", "data": theme}
@@ -41,43 +41,35 @@ async def create_article_theme(
 @router.get("/{theme_id}", summary="Получение конкретной темы статьи")
 async def get_article_theme(
     theme_id: int,
+    user_id: UserIdDep,
     db: DBDep,
 ):
-    return await db.ArticleThemes.get_one_or_none(id=theme_id, mark_for_del = False)
+    return await db.articleThemes.get_one_or_none(id=theme_id, mark_for_del = False)
 
 
 @router.get("", summary="Получение списка тем статей")
 async def get_article_themes(
     pagination: PaginationDep,
+    user_id: UserIdDep,
     db: DBDep,
     theme: str | None = Query(None, description="Тема статьи"),
 ):
-    return await db.ArticleThemes.get_all(
+    return await db.articleThemes.get_all(
         theme=theme,
         limit=pagination.per_page,
         offset=(pagination.page - 1) * pagination.per_page
     )
 
 
-# @router.put('/{theme_id}', summary="Редактирование темы статьи")
-# async def update_article_theme(
-#     theme_id: int,
-#     article_theme_data: ArticleThemes,
-# ):
-#     async with async_session_maker_talent_city() as session:
-#         await ArticleThemesRepository( session ).update( article_theme_data, id=theme_id )
-#         await session.commit()
-#     return {"status": "OK" }
-
-
 @router.patch("/{theme_id}", summary="Редактирование темы статьи")
 async def update_article_theme(
     theme_id: int,
-    article_theme_data: ArticleThemesPatch,
+    user_id: UserIdDep,
+    article_theme_data: ArticleThemePatch,
     db: DBDep,
 ):
     print(f"{article_theme_data}")
-    await db.ArticleThemes.update( article_theme_data, exclude_unset = True, id=theme_id )
+    await db.articleThemes.update( article_theme_data, exclude_unset = True, id=theme_id )
     await db.commit()
     return {"status": "OK" }
 
@@ -89,16 +81,17 @@ async def update_article_theme(
 )
 async def delete_article_theme(
     theme_id: int,
+    user_id: UserIdDep,
     db: DBDep,
 ):
-    article_theme_data = ArticleThemesDel(
+    article_theme_data = ArticleThemeDel(
         mark_for_del=True,
         deleted_at=datetime.now(),
         isActive=False,
         disactive_at=datetime.now(),
-        updated_at=datetime.now()
+        update_at=datetime.now()
     )
-
-    await db.ArticleThemes.update( article_theme_data, id=theme_id )
+    # print(f"{article_theme_data}")
+    await db.articleThemes.update( article_theme_data, id=theme_id )
     await db.commit()
     return { "status": "OK" }

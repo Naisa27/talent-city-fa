@@ -3,7 +3,7 @@ from src.repositories.articles import ArticlesRepository
 from src.repositories.favourites import FavouritesRepository
 from src.repositories.roles import RolesRepository
 from src.repositories.users import UsersRepository
-
+from src.repositories.users_roles import UsersRolesRepository
 
 
 class DBManager:
@@ -13,11 +13,12 @@ class DBManager:
     async def __aenter__(self):
         self.session = self.session_factory()
 
-        self.ArticleThemes = ArticleThemesRepository(self.session)
-        self.Articles = ArticlesRepository(self.session)
-        self.Roles = RolesRepository(self.session)
-        self.Users = UsersRepository(self.session)
-        self.Favourites = FavouritesRepository(self.session)
+        self.articleThemes = ArticleThemesRepository(self.session)
+        self.articles = ArticlesRepository(self.session)
+        self.roles = RolesRepository(self.session)
+        self.users = UsersRepository(self.session)
+        self.favourites = FavouritesRepository(self.session)
+        self.users_roles = UsersRolesRepository(self.session)
 
         return self
 

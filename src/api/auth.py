@@ -1,9 +1,8 @@
 from fastapi import APIRouter, Body, HTTPException, Response
 
 from src.api.dependencies import UserIdDep, DBDep
-from src.database import async_session_maker_talent_city
-from src.repositories.users import UsersRepository
 from src.schemas.users import UserRequestAdd, UserAdd, UserRequestLogin
+from src.schemas.users_roles import UserRoleAdd
 from src.services.auth import AuthService
 
 router = APIRouter(prefix='/auth', tags=['Аутентификация и авторизация'])
@@ -51,7 +50,10 @@ async def register(
         phone=data.phone,
         hashed_password=hashed_password
     )
-    await db.Users.add(new_user_data)
+    user = await db.users.add(new_user_data)
+
+    users_roles_data = [UserRoleAdd(user_id=user.id, role_id=role_id) for role_id in data.roles_ids]
+    await db.users_roles.add_bulk(users_roles_data)
     await db.commit()
 
     return {"status": "OK"}
@@ -80,7 +82,7 @@ async def login(
         },
     ),
 ):
-    user = await db.Users.get_user_with_hashed_password(email=data.email)
+    user = await db.users.get_user_with_hashed_password(email=data.email)
 
     if not user:
         raise HTTPException(status_code=401, detail="Пользователь не зарегистрирован")
@@ -99,7 +101,7 @@ async def get_me(
     user_id: UserIdDep,
     db: DBDep
 ):
-    user = await db.Users.get_one_or_none(id=user_id)
+    user = await db.users.get_one_or_none(id=user_id)
     return user
 
 

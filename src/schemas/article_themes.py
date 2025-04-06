@@ -3,12 +3,12 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict
 
 
-class ArticleThemesAdd(BaseModel):
+class ArticleThemeAdd(BaseModel):
     theme: str
     description: str | None = None
 
 
-class ArticleThemes(ArticleThemesAdd):
+class ArticleTheme(ArticleThemeAdd):
     id: int
     created_at: datetime
     isActive: bool
@@ -20,15 +20,15 @@ class ArticleThemes(ArticleThemesAdd):
     model_config = ConfigDict(from_attributes=True)
 
 
-class ArticleThemesPatch(BaseModel):
+class ArticleThemePatch(BaseModel):
     theme: str | None = None
     description: str | None = None
 
 
-class ArticleThemesDel(BaseModel):
+class ArticleThemeDel(BaseModel):
     mark_for_del: bool
     deleted_at: datetime
     isActive: bool
     disactive_at: datetime
-    updated_at: datetime
+    update_at: datetime
     

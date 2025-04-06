@@ -40,7 +40,7 @@ async def create_article(
     _article_data = ArticleAdd(
         user_id=user_id, **article_data.model_dump()
     )
-    article = await db.Articles.add(_article_data)
+    article = await db.articles.add(_article_data)
     await db.commit()
 
     return {"status": "OK", "data": article}
@@ -53,13 +53,13 @@ async def get_articles(
     title: str | None = Query(None, description="Заголовок статьи"),
     article_theme_id: int | None = Query(None, description="ID темы статьи"),
     article_body: str | None = Query(None, description="Содержание статьи"),
-    author: int | None = Query(None, description="ID автора статьи"),
+    author_id: int | None = Query(None, description="ID автора статьи"),
 ):
-    return await db.Articles.get_all(
+    return await db.articles.get_all(
         title=title,
         article_theme_id=article_theme_id,
         article_body=article_body,
-        author=author,
+        author_id=author_id,
         limit=pagination.per_page,
         offset=(pagination.page - 1) * pagination.per_page
     )
@@ -74,11 +74,11 @@ async def get_my_articles(
     article_theme_id: int | None = Query(None, description="ID темы статьи"),
     article_body: str | None = Query(None, description="Содержание статьи"),
 ):
-    return await db.Articles.get_all(
+    return await db.articles.get_all(
         title=title,
         article_theme_id=article_theme_id,
         article_body=article_body,
-        author=user_id,
+        author_id=user_id,
         limit=pagination.per_page,
         offset=(pagination.page - 1) * pagination.per_page
     )
@@ -90,8 +90,8 @@ async def get_my_deleted_articles(
     db: DBDep,
     pagination: PaginationDep,
 ):
-    return await db.Articles.get_deleted(
-        author=user_id,
+    return await db.articles.get_deleted(
+        author_id=user_id,
         limit=pagination.per_page,
         offset=(pagination.page - 1) * pagination.per_page
     )
@@ -109,7 +109,7 @@ async def restore_my_deleted_article(
         deleted_at=None,
         updated_at=datetime.now()
     )
-    await db.Articles.update( article_data, id=article_id )
+    await db.articles.update( article_data, id=article_id )
     await db.commit()
 
     return {"status": "OK" }
@@ -120,7 +120,7 @@ async def get_article(
     article_id: int,
     db: DBDep,
 ):
-    return await db.Articles.get_one_or_none(id=article_id)
+    return await db.articles.get_one_or_none(id=article_id)
 
 
 @router.patch("/{article_id}", summary="Редактирование статьи")
@@ -142,7 +142,7 @@ async def update_article(
 
     _article_data_dict = article_data.model_dump( exclude_unset=True )
     _article_data = ArticlePatch(**_article_data_dict, **data_dt)
-    await db.Articles.update(_article_data, exclude_unset=True, id=article_id)
+    await db.articles.update(_article_data, exclude_unset=True, id=article_id)
     await db.commit()
 
     return {"status": "OK" }
@@ -166,7 +166,7 @@ async def delete_article(
         unpublish_at=datetime.now(),
         updated_at=datetime.now()
     )
-    await db.Articles.update(article_data, id=article_id)
+    await db.articles.update(article_data, id=article_id)
     await db.commit()
 
     return {"status": "OK" }

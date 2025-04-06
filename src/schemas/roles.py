@@ -3,7 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict
 
 
-class RolesAdd(BaseModel):
+class RoleAdd(BaseModel):
     title: str
     description: str | None = None
     level: int
@@ -11,7 +11,7 @@ class RolesAdd(BaseModel):
     model_config = ConfigDict( from_attributes=True )
 
 
-class Roles(RolesAdd):
+class Role(RoleAdd):
     id: int
     created_at: datetime
     isActive: bool
@@ -23,7 +23,7 @@ class Roles(RolesAdd):
     model_config = ConfigDict(from_attributes=True)
 
 
-class RolesPatch(BaseModel):
+class RolePatch(BaseModel):
     title: str | None = None
     description: str | None = None
     level: int | None = None
