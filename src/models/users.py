@@ -29,7 +29,7 @@ class UsersOrm(BaseTalentCity):
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime)
     updated_at: Mapped[datetime | None] = mapped_column(DateTime, onupdate=datetime.now())
 
-    # roles: Mapped[list["RolesOrm"]] = relationship(
-    #     back_populates="UsersOrm",
-    #     secondary="users_roles",
-    # )
+    roles: Mapped[list["RolesOrm"]] = relationship(
+        back_populates="users", # с каким полем в данной модели связь
+        secondary="users_roles", # через какую таблицу прописана связь
+    )

@@ -10,7 +10,11 @@ class UsersRolesRepository(BaseRepository):
     schema = UserRole
 
     async def set_user_role( self, user_id: int, role_ids: list[int] ) -> None:
-        current_role_ids_from_db_query = select(self.model.role_id).filter_by(user_id=user_id)
+        current_role_ids_from_db_query = (
+            select(self.model.role_id)
+            .filter_by(user_id=user_id)
+        )
+
         res = await self.session.execute( current_role_ids_from_db_query )
         current_role_ids_from_db: list[int] = res.scalars().all()
         ids_to_delete: list[int] = list(set(current_role_ids_from_db) - set(role_ids))

@@ -2,7 +2,7 @@ from datetime import datetime
 
 from fastapi import APIRouter, Body, Query
 
-from src.api.dependencies import UserIdDep, PaginationDep, DBDep
+from src.api.dependencies import UserIdDep, PaginationDep, DBDep, UserRolesDep
 from src.schemas.articles import ArticleAdd, ArticleRequestAdd, ArticleRequestPatch, ArticlePatch, ArticleDel, ArticleRestore
 
 router = APIRouter(prefix="/articles", tags=["Статьи"])
@@ -12,6 +12,7 @@ router = APIRouter(prefix="/articles", tags=["Статьи"])
 async def create_article(
     user_id: UserIdDep,
     db: DBDep,
+    user_roles: UserRolesDep,
     author_id: int | None = Query(default=None),
     article_data: ArticleRequestAdd = Body(
         openapi_examples={

@@ -2,6 +2,8 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, EmailStr
 
+from src.schemas.roles import Role
+
 
 class UserRequestAdd(BaseModel):
     last_name: str
@@ -46,8 +48,13 @@ class User(BaseModel):
     model_config = ConfigDict( from_attributes=True )
 
 
+class UserWithRels(User):
+    roles: list[Role]
+
+
 class UserWithHashedPassword(User):
     hashed_password: str
+    roles: list[Role]
 
 
 class UserRequestLogin(BaseModel):

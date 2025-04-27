@@ -6,11 +6,12 @@ from sqlalchemy import select, insert, update, delete
 from sqlalchemy.exc import IntegrityError
 
 from src.exceptions.base import AllreadyExistsException
+from src.repositories.mappers.base import DataMapper
 
 
 class BaseRepository:
     model = None
-    schema: BaseModel = None
+    mapper: DataMapper = None
 
     def __init__( self, session ):
         self.session = session
@@ -18,7 +19,7 @@ class BaseRepository:
     async def get_filtered( self, *filter, **filter_by ):
         query = select( self.model ).filter(*filter).filter_by(**filter_by)
         result = await self.session.execute( query )
-        return [self.schema.model_validate(row) for row in result.scalars().all()]
+        return [self.mapper.map_to_domain_entity(row) for row in result.scalars().all()]
 
     async def get_all( self, *args, **kwargs ):
         return await self.get_filtered()
@@ -32,13 +33,20 @@ class BaseRepository:
         if not row:
             return None
 
+        return self.mapper.map_to_domain_entity(row)
 
-        return self.schema.model_validate(row)
+    async def get_one( self, **filter_by ):
+        query = select( self.model ).filter_by(**filter_by)
+
+        result = await self.session.execute( query )
+        row = result.scalars().one()
+
+        return self.mapper.map_to_domain_entity(row)
 
     async def get_not_none_filtered( self, column: str, **filter_by ):
         query = select(self.model).filter(self.model[column].is_not(None)).filter_by(**filter_by)
         result = await self.session.execute( query )
-        return [self.schema.model_validate( row ) for row in result.scalars().all()]
+        return [self.mapper.map_to_domain_entity( row ) for row in result.scalars().all()]
 
     async def get_all_not_none( self ):
         return await self.get_not_none_filtered()
@@ -55,7 +63,7 @@ class BaseRepository:
             else:
                 raise e
 
-        return self.schema.model_validate( row )
+        return self.mapper.map_to_domain_entity( row )
 
     async def add_bulk( self, data: list[BaseModel] ):
         add_data_stmt = insert( self.model ).values( [item.model_dump() for item in data] )

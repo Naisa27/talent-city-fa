@@ -90,7 +90,7 @@ async def login(
     if not AuthService().verify_password(data.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Неверный пароль")
 
-    access_token = AuthService().create_access_token({"user_id": user.id, "roles": []})
+    access_token = AuthService().create_access_token({"user_id": user.id, "roles": user.roles})
     response.set_cookie("access_token", access_token)
 
     return {"access_token": access_token}
@@ -101,7 +101,7 @@ async def get_me(
     user_id: UserIdDep,
     db: DBDep
 ):
-    user = await db.users.get_one_or_none(id=user_id)
+    user = await db.users.get_one_or_none_with_roles(id=user_id)
     return user
 
 

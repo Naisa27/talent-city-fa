@@ -2,12 +2,13 @@ from sqlalchemy import select, func
 
 from src.models.article_themes import ArticleThemesOrm
 from src.repositories.base import BaseRepository
+from src.repositories.mappers.mappers import ArticleThemesDataMapper
 from src.schemas.article_themes import ArticleTheme
 
 
 class ArticleThemesRepository(BaseRepository):
     model = ArticleThemesOrm
-    schema = ArticleTheme
+    mapper = ArticleThemesDataMapper
 
     async def get_all(
             self,
@@ -27,4 +28,4 @@ class ArticleThemesRepository(BaseRepository):
         )
         result = await self.session.execute(query)
 
-        return [ArticleTheme.model_validate(item, from_attributes=True) for item in result.scalars().all()]
+        return [self.mapper.map_to_domain_entity(item) for item in result.scalars().all()]

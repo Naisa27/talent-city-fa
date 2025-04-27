@@ -3,7 +3,7 @@ from datetime import datetime
 from fastapi import APIRouter, Body
 
 from src.api.dependencies import DBDep, UserIdDep
-from src.schemas.users import UserPatchRequest, UserPatch
+from src.schemas.users import UserPatchRequest, UserPatch, User
 from src.schemas.users_roles import UserRoleAdd
 
 router = APIRouter(prefix='/users', tags=['Пользователи'])
@@ -53,14 +53,19 @@ async def update_user(
         }
     )
 ):
-    data_dt = {
+    user_from_db: User = await db.users.get_one(id=user_id)
+
+    data_dt: dict = {
         "updated_at": datetime.now(),
     }
+
     if user_data.isBlocked:
         data_dt["blocked_at"] = datetime.now()
 
-    if user_data.isActive:
+    if not user_data.isActive and user_from_db.isActive:
         data_dt["disactive_at"] = datetime.now()
+    elif user_data.isActive and not user_from_db.isActive:
+        data_dt["disactive_at"] = None
 
     if user_data.mark_for_del:
         data_dt["deleted_at"] = datetime.now()

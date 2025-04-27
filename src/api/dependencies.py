@@ -34,12 +34,20 @@ def get_token(request: Request) -> str:
     return token
 
 
-def get_current_user_id(token: str = Depends(get_token)):
+def get_current_user_id(token: str = Depends(get_token)) -> int:
     data = AuthService().decode_token( token )
     return data.get( "user_id", None )
 
+
 UserIdDep = Annotated[int, Depends(get_current_user_id)]
 
+
+def get_current_user_roles(token: str = Depends(get_token)) -> list[int]:
+    data = AuthService().decode_token( token )
+    return [role.id for role in data.get("roles")]
+
+
+UserRolesDep = Annotated[list[int], Depends(get_current_user_roles)]
 
 # def get_db_manager():
 #     return DBManager(session_factory=async_session_maker_talent_city)
