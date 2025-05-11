@@ -2,12 +2,12 @@ from sqlalchemy import select, delete, insert
 
 from src.models import UsersRolesOrm
 from src.repositories.base import BaseRepository
-from src.schemas.users_roles import UserRole
+from src.repositories.mappers.mappers import UserRoleDataMapper
 
 
 class UsersRolesRepository(BaseRepository):
     model = UsersRolesOrm
-    schema = UserRole
+    mapper = UserRoleDataMapper
 
     async def set_user_role( self, user_id: int, role_ids: list[int] ) -> None:
         current_role_ids_from_db_query = (

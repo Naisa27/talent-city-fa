@@ -2,12 +2,13 @@ from sqlalchemy import select, func
 
 from src.models.articles import ArticlesOrm
 from src.repositories.base import BaseRepository
+from src.repositories.mappers.mappers import ArticleDataMapper
 from src.schemas.articles import Article
 
 
 class ArticlesRepository(BaseRepository):
     model = ArticlesOrm
-    schema = Article
+    mapper = ArticleDataMapper
 
     async def get_all(
             self,
@@ -40,7 +41,7 @@ class ArticlesRepository(BaseRepository):
         )
         result = await self.session.execute(query)
 
-        return [Article.model_validate(item, from_attributes=True) for item in result.scalars().all()]
+        return [self.mapper.map_to_domain_entity(item) for item in result.scalars().all()]
 
 
     async def get_deleted(
@@ -60,4 +61,4 @@ class ArticlesRepository(BaseRepository):
         )
         result = await self.session.execute(query)
 
-        return [Article.model_validate(item, from_attributes=True) for item in result.scalars().all()]
+        return [self.mapper.map_to_domain_entity(item) for item in result.scalars().all()]

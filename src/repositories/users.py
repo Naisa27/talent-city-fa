@@ -6,12 +6,12 @@ from sqlalchemy.orm import selectinload, joinedload
 
 from src.models import UsersOrm
 from src.repositories.base import BaseRepository
-from src.schemas.users import User, UserWithHashedPassword, UserWithRels
+from src.repositories.mappers.mappers import UserDataMapper, UserWithHashedPasswordDataMapper, UserWithRelsDataMapper
 
 
 class UsersRepository(BaseRepository):
     model = UsersOrm
-    schema = User
+    mapper = UserDataMapper
 
     async def get_user_with_hashed_password(self, email: EmailStr):
         query = (
@@ -25,7 +25,7 @@ class UsersRepository(BaseRepository):
         except NoResultFound as e:
             raise HTTPException( status_code=404, detail="User not found" )
 
-        user_with_roles = UserWithHashedPassword.model_validate( row )
+        user_with_roles = UserWithHashedPasswordDataMapper.map_to_domain_entity( row )
 
         # передаём только id ролей при залогинивании
         user_with_roles.roles = [ role.id for role in user_with_roles.roles]
@@ -45,4 +45,4 @@ class UsersRepository(BaseRepository):
         if not row:
             return None
 
-        return UserWithRels.model_validate(row)
+        return UserWithRelsDataMapper.map_to_domain_entity(row)

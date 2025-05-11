@@ -1,8 +1,15 @@
+from typing import TypeVar
 
+from pydantic import BaseModel
+
+from src.database import BaseTalentCity
+
+DBModelType = TypeVar("DBModelType", bound=BaseTalentCity)
+SchemaType = TypeVar("SchemaType", bound=BaseModel)
 
 class DataMapper:
-    db_model = None
-    schema = None
+    db_model: type[DBModelType] = None
+    schema: type[SchemaType] = None
 
     # превращение модели в схему
     @classmethod
