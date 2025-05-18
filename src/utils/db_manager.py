@@ -1,6 +1,7 @@
 from src.repositories.article_themes import ArticleThemesRepository
 from src.repositories.articles import ArticlesRepository
 from src.repositories.favourites import FavouritesRepository
+from src.repositories.images import ImagesRepository
 from src.repositories.roles import RolesRepository
 from src.repositories.users import UsersRepository
 from src.repositories.users_roles import UsersRolesRepository
@@ -19,6 +20,7 @@ class DBManager:
         self.users = UsersRepository(self.session)
         self.favourites = FavouritesRepository(self.session)
         self.users_roles = UsersRolesRepository(self.session)
+        self.images = ImagesRepository(self.session)
 
         return self
 

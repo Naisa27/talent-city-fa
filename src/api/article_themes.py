@@ -7,6 +7,7 @@ from fastapi_cache.decorator import cache
 from src.api.dependencies import PaginationDep, DBDep, UserIdDep
 from src.init import redis_manager
 from src.schemas.article_themes import ArticleThemePatch, ArticleThemeAdd, ArticleThemeDel
+from src.tasks.tasks import test_task
 from src.utils.usefull import datetime_serialize
 
 router = APIRouter(prefix="/article_themes", tags=["Справочник тем статей"])
@@ -36,6 +37,8 @@ async def create_article_theme(
 ):
     theme = await db.articleThemes.add(article_theme_data)
     await db.commit()
+
+    test_task.delay()
 
     return {"status": "OK", "data": theme}
 

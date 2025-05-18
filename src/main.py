@@ -16,9 +16,10 @@ from fastapi.openapi.docs import (
 )
 
 # если не видит файлы в папке src
+sys.path.append(str(Path(__file__).parent.parent))
+
 from src.init import redis_manager
 
-sys.path.append(str(Path(__file__).parent.parent))
 
 from src.api.auth import router as auth_router
 from src.api.index import router as index_router
@@ -28,6 +29,7 @@ from src.api.article_themes import router as article_themes_router
 from src.api.articles import router as articles_router
 from src.api.roles import router as roles_router
 from src.api.favourites import router as favourites_router
+from src.api.images import router as images_router
 
 
 @asynccontextmanager
@@ -55,6 +57,7 @@ app.include_router(article_themes_router)
 app.include_router(articles_router)
 app.include_router(roles_router)
 app.include_router(favourites_router)
+app.include_router(images_router)
 
 
 @app.get("/docs", include_in_schema=False)

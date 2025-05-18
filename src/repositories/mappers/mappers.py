@@ -1,8 +1,9 @@
-from src.models import ArticleThemesOrm, ArticlesOrm, FavouritesOrm, RolesOrm, UsersOrm, UsersRolesOrm
+from src.models import ArticleThemesOrm, ArticlesOrm, FavouritesOrm, RolesOrm, UsersOrm, UsersRolesOrm, ImagesOrm
 from src.repositories.mappers.base import DataMapper
 from src.schemas.article_themes import ArticleTheme
 from src.schemas.articles import Article
 from src.schemas.favourites import FavouriteArticle
+from src.schemas.images import Image
 from src.schemas.roles import Role
 from src.schemas.users import User, UserWithHashedPassword, UserWithRels
 from src.schemas.users_roles import UserRole
@@ -46,3 +47,8 @@ class UserWithRelsDataMapper(DataMapper):
 class UserRoleDataMapper(DataMapper):
     db_model = UsersRolesOrm
     schema = UserRole
+
+
+class ImageDataMapper(DataMapper):
+    db_model = ImagesOrm
+    schema = Image
