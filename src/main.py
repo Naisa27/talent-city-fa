@@ -1,9 +1,13 @@
 import sys
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI
 
 import uvicorn
+
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.redis import RedisBackend
 
 # альтернативный путь к документации, если основной сильно тормозит или вообще не грузит
 from fastapi.openapi.docs import (
@@ -12,6 +16,8 @@ from fastapi.openapi.docs import (
 )
 
 # если не видит файлы в папке src
+from src.init import redis_manager
+
 sys.path.append(str(Path(__file__).parent.parent))
 
 from src.api.auth import router as auth_router
@@ -23,9 +29,22 @@ from src.api.articles import router as articles_router
 from src.api.roles import router as roles_router
 from src.api.favourites import router as favourites_router
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # При старте
+    await redis_manager.connect()
+    print("Starting up app")
+    FastAPICache.init( RedisBackend( redis_manager.redis ), prefix="fastapi-cache" )
+    yield
+    await redis_manager.close()
+    print("Finished app!")
+    # При выключении/перезагрузке
+
 app = FastAPI(
     title = "API - сайт Город талантов",
     docs_url=None,
+    lifespan=lifespan,
 )
 
 app.include_router(auth_router)

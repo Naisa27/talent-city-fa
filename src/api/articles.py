@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from fastapi import APIRouter, Body, Query
+from fastapi_cache.decorator import cache
 
 from src.api.dependencies import UserIdDep, PaginationDep, DBDep, UserRolesDep
 from src.schemas.articles import ArticleAdd, ArticleRequestAdd, ArticleRequestPatch, ArticlePatch, ArticleDel, ArticleRestore
@@ -48,6 +49,7 @@ async def create_article(
 
 
 @router.get("", summary="Получение списка статей с фильтрами для всех пользователей")
+@cache(expire=10)
 async def get_articles(
     pagination: PaginationDep,
     db: DBDep,
@@ -56,6 +58,7 @@ async def get_articles(
     article_body: str | None = Query(None, description="Содержание статьи"),
     author_id: int | None = Query(None, description="ID автора статьи"),
 ):
+    print( "==== Идём в БД ====" )
     return await db.articles.get_all(
         title=title,
         article_theme_id=article_theme_id,
@@ -67,6 +70,7 @@ async def get_articles(
 
 
 @router.get("/me", summary="Получение списка только моих статей с фильтрами")
+@cache(expire=10)
 async def get_my_articles(
     user_id: UserIdDep,
     db: DBDep,
@@ -86,6 +90,7 @@ async def get_my_articles(
 
 
 @router.get("/me/deleted", summary="Получение списка моих удалённых статей")
+@cache(expire=10)
 async def get_my_deleted_articles(
     user_id: UserIdDep,
     db: DBDep,
@@ -117,6 +122,7 @@ async def restore_my_deleted_article(
 
 
 @router.get("/{article_id}", summary="Получение конкретной статьи")
+@cache(expire=10)
 async def get_article(
     article_id: int,
     db: DBDep,

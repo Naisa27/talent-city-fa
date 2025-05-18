@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from fastapi_cache.decorator import cache
 
 from src.api.dependencies import UserIdDep, DBDep
 from src.exceptions.base import AllreadyExistsException
@@ -26,6 +27,7 @@ async def add_article(
 
 
 @router.get("/articles", summary="Получить список избранных статей")
+@cache(expire=10)
 async def get_articles(
     db: DBDep,
 ):
@@ -34,6 +36,7 @@ async def get_articles(
 
 
 @router.get("/articles/me", summary="Получить список своих избранных статей")
+@cache(expire=10)
 async def get_my_articles(
     db: DBDep,
     user_id: UserIdDep

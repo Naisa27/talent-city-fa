@@ -4,7 +4,6 @@ from fastapi import APIRouter, Body
 
 from src.api.dependencies import DBDep, UserIdDep
 from src.schemas.users import UserPatchRequest, UserPatch, User
-from src.schemas.users_roles import UserRoleAdd
 
 router = APIRouter(prefix='/users', tags=['Пользователи'])
 

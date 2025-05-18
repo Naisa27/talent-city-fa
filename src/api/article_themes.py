@@ -1,11 +1,13 @@
+import json
 from datetime import datetime
 
 from fastapi import APIRouter, Body, Query
+from fastapi_cache.decorator import cache
 
 from src.api.dependencies import PaginationDep, DBDep, UserIdDep
-from src.database import async_session_maker_talent_city
-from src.repositories.article_themes import ArticleThemesRepository
+from src.init import redis_manager
 from src.schemas.article_themes import ArticleThemePatch, ArticleThemeAdd, ArticleThemeDel
+from src.utils.usefull import datetime_serialize
 
 router = APIRouter(prefix="/article_themes", tags=["Справочник тем статей"])
 
@@ -48,12 +50,32 @@ async def get_article_theme(
 
 
 @router.get("", summary="Получение списка тем статей")
+@cache(expire=10)
 async def get_article_themes(
     pagination: PaginationDep,
     user_id: UserIdDep,
     db: DBDep,
     theme: str | None = Query(None, description="Тема статьи"),
 ):
+    # articleThemes_from_cache = await redis_manager.get("articleThemes")
+    #
+    # if not articleThemes_from_cache:
+    #     print("==== Идём в БД ====")
+    #     articleThemes = await db.articleThemes.get_all(
+    #         theme=theme,
+    #         limit=pagination.per_page,
+    #         offset=(pagination.page - 1) * pagination.per_page
+    #     )
+    #     articleThemes_schemas: list[dict] = [f.model_dump() for f in articleThemes]
+    #     articleThemes_json = json.dumps(articleThemes_schemas, default=datetime_serialize)
+    #     await redis_manager.set( "articleThemes", articleThemes_json, 10 )
+    #
+    #     return articleThemes
+    # else:
+    #     print("==== Идём в кэш ====")
+    #     articleThemes_dicts = json.loads(articleThemes_from_cache)
+    #     return  articleThemes_dicts
+    print( "==== Идём в БД ====" )
     return await db.articleThemes.get_all(
         theme=theme,
         limit=pagination.per_page,

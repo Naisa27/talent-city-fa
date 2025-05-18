@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Body
+from fastapi_cache.decorator import cache
 
 from src.api.dependencies import DBDep, UserIdDep
-from src.database import async_session_maker_talent_city
-from src.repositories.roles import RolesRepository
 from src.schemas.roles import RoleAdd, RolePatch
 
 router = APIRouter(prefix="/roles", tags=['Справочник ролей пользователей'])
@@ -39,6 +38,7 @@ async def create_role(
 
 
 @router.get("", summary="Получение списка ролей")
+@cache(expire=10)
 async def get_roles(
     db: DBDep,
     user_id: UserIdDep,
